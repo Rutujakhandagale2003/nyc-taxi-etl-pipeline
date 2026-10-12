@@ -24,7 +24,7 @@ def transform_weather(raw_path: Path, month: str, config: dict, logger) -> Path:
     # The useful part of the JSON is "daily": {"time": [...], "temperature_2m_max": [...], ...}
     df = pd.DataFrame(data["daily"])
     df = df.rename(columns=COLUMN_RENAMES)
-    df["weather_date"] = pd.to_datetime(df["weather_date"]).dt.date
+    df["weather_date"] = pd.to_datetime(df["weather_date"])
 
     # ----- Validation: exactly one row per day, no missing days -----
     expected_days = pd.Period(month, freq="M").days_in_month

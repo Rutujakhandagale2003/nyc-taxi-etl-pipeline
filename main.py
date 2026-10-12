@@ -6,6 +6,7 @@ from src.extract.tlc import extract_trips, extract_zone_lookup
 from src.extract.weather import extract_weather
 from src.logger import get_logger
 from src.transform.clean import transform_trips
+from src.transform.enrich import enrich_trips
 from src.transform.weather import transform_weather
 
 
@@ -16,7 +17,7 @@ def main():
 
     try:
         # ---------- EXTRACT (zone lookup, downloaded once) ----------
-        extract_zone_lookup(config, logger)
+        zones_path = extract_zone_lookup(config, logger)
 
         for month in config["pipeline"]["months"]:
             logger.info("========== Processing month %s ==========", month)
@@ -26,8 +27,9 @@ def main():
             raw_weather_path = extract_weather(month, config, logger)
 
             # ---------- TRANSFORM ----------
-            transform_trips(raw_trips_path, month, config, logger)
-            transform_weather(raw_weather_path, month, config, logger)
+            clean_path = transform_trips(raw_trips_path, month, config, logger)
+            weather_path = transform_weather(raw_weather_path, month, config, logger)
+            enrich_trips(clean_path, weather_path, zones_path, month, config, logger)
 
         logger.info("Pipeline finished successfully")
 
