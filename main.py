@@ -4,6 +4,7 @@ import sys
 from src.config import load_config
 from src.extract.tlc import extract_trips, extract_zone_lookup
 from src.logger import get_logger
+from src.transform.clean import transform_trips
 
 
 def main():
@@ -12,10 +13,17 @@ def main():
     logger.info("Pipeline started")
 
     try:
-        # ---------- EXTRACT ----------
+        # ---------- EXTRACT (zone lookup, downloaded once) ----------
         extract_zone_lookup(config, logger)
+
         for month in config["pipeline"]["months"]:
-            extract_trips(month, config, logger)
+            logger.info("========== Processing month %s ==========", month)
+
+            # ---------- EXTRACT ----------
+            raw_path = extract_trips(month, config, logger)
+
+            # ---------- TRANSFORM ----------
+            transform_trips(raw_path, month, config, logger)
 
         logger.info("Pipeline finished successfully")
 
