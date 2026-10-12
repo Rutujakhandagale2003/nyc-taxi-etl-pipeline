@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+
+# Data files (too large for GitHub)
+data/
+*.parquet
+*.csv
+*.duckdb
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Logs
+logs/
+*.log
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
