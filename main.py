@@ -4,6 +4,7 @@ import sys
 from src.config import load_config
 from src.extract.tlc import extract_trips, extract_zone_lookup
 from src.extract.weather import extract_weather
+from src.load.warehouse import create_schema, get_connection, load_month, load_static_dimensions
 from src.logger import get_logger
 from src.quality.checks import run_quality_checks
 from src.transform.clean import transform_trips
@@ -20,20 +21,28 @@ def main():
         # ---------- EXTRACT (zone lookup, downloaded once) ----------
         zones_path = extract_zone_lookup(config, logger)
 
-        for month in config["pipeline"]["months"]:
-            logger.info("========== Processing month %s ==========", month)
+        with get_connection(config) as con:
+            # ---------- WAREHOUSE SETUP ----------
+            create_schema(con, logger)
+            load_static_dimensions(con, zones_path, logger)
 
-            # ---------- EXTRACT ----------
-            raw_trips_path = extract_trips(month, config, logger)
-            raw_weather_path = extract_weather(month, config, logger)
+            for month in config["pipeline"]["months"]:
+                logger.info("========== Processing month %s ==========", month)
 
-            # ---------- TRANSFORM ----------
-            clean_path = transform_trips(raw_trips_path, month, config, logger)
-            weather_path = transform_weather(raw_weather_path, month, config, logger)
-            enriched_path = enrich_trips(clean_path, weather_path, zones_path, month, config, logger)
+                # ---------- EXTRACT ----------
+                raw_trips_path = extract_trips(month, config, logger)
+                raw_weather_path = extract_weather(month, config, logger)
 
-            # ---------- DATA QUALITY GATE ----------
-            run_quality_checks(enriched_path, month, config, logger)
+                # ---------- TRANSFORM ----------
+                clean_path = transform_trips(raw_trips_path, month, config, logger)
+                weather_path = transform_weather(raw_weather_path, month, config, logger)
+                enriched_path = enrich_trips(clean_path, weather_path, zones_path, month, config, logger)
+
+                # ---------- DATA QUALITY GATE ----------
+                run_quality_checks(enriched_path, month, config, logger)
+
+                # ---------- LOAD ----------
+                load_month(con, enriched_path, weather_path, month, config, logger)
 
         logger.info("Pipeline finished successfully")
 
