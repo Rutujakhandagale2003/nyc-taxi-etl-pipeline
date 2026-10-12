@@ -3,6 +3,7 @@ paths:
   raw: data/raw              # files exactly as downloaded
   staging: data/staging      # cleaned / transformed files
   warehouse: data/warehouse  # DuckDB database lives here
+  quality: data/quality
   logs: logs
 
 # ---------- Data sources ----------
@@ -45,3 +46,9 @@ cleaning:
 # ---------- Warehouse ----------
 warehouse:
   db_file: nyc_taxi.duckdb
+
+
+# ---------- Data quality thresholds ----------
+quality:
+  min_rows_per_month: 1000000
+  max_avg_speed_mph: 80

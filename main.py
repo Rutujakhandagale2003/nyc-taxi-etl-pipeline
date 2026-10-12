@@ -5,6 +5,7 @@ from src.config import load_config
 from src.extract.tlc import extract_trips, extract_zone_lookup
 from src.extract.weather import extract_weather
 from src.logger import get_logger
+from src.quality.checks import run_quality_checks
 from src.transform.clean import transform_trips
 from src.transform.enrich import enrich_trips
 from src.transform.weather import transform_weather
@@ -29,7 +30,10 @@ def main():
             # ---------- TRANSFORM ----------
             clean_path = transform_trips(raw_trips_path, month, config, logger)
             weather_path = transform_weather(raw_weather_path, month, config, logger)
-            enrich_trips(clean_path, weather_path, zones_path, month, config, logger)
+            enriched_path = enrich_trips(clean_path, weather_path, zones_path, month, config, logger)
+
+            # ---------- DATA QUALITY GATE ----------
+            run_quality_checks(enriched_path, month, config, logger)
 
         logger.info("Pipeline finished successfully")
 
