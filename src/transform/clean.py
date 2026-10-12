@@ -73,6 +73,7 @@ def build_rejection_checks(df: pd.DataFrame, month: str, rules: dict) -> dict:
         "fare_not_positive": df["fare_amount"] <= 0,
         "fare_too_high": df["fare_amount"] > rules["max_fare"],
         "too_many_passengers": (df["passenger_count"] > rules["max_passenger_count"]).fillna(False),
+        "speed_too_high": (df["trip_distance"] / (df["trip_duration_minutes"] / 60)) > rules["max_avg_speed_mph"],
     }
 
 

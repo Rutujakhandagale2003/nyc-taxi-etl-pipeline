@@ -36,11 +36,12 @@ weather:
 
 # ---------- Data cleaning rules ----------
 cleaning:
-  min_trip_distance: 0.1          # miles
+  min_trip_distance: 0.1
   max_trip_distance: 100
   max_fare: 500
   max_trip_duration_minutes: 300
   max_passenger_count: 6
+  max_avg_speed_mph: 80
   valid_rate_codes: [1, 2, 3, 4, 5, 6]
 
 # ---------- Warehouse ----------
