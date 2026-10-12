@@ -18,11 +18,20 @@ pipeline:
     - "2024-01"
     - "2024-02"
 
-# ---------- Weather location (New York City) ----------
+# ---------- Weather (New York City) ----------
 weather:
   latitude: 40.7128
   longitude: -74.0060
   timezone: America/New_York
+  daily_variables:
+    - temperature_2m_max
+    - temperature_2m_min
+    - temperature_2m_mean
+    - precipitation_sum
+    - rain_sum
+    - snowfall_sum
+    - wind_speed_10m_max
+  heavy_rain_mm: 10      # precipitation above this = heavy rain day
 
 # ---------- Data cleaning rules ----------
 cleaning:

@@ -3,8 +3,10 @@ import sys
 
 from src.config import load_config
 from src.extract.tlc import extract_trips, extract_zone_lookup
+from src.extract.weather import extract_weather
 from src.logger import get_logger
 from src.transform.clean import transform_trips
+from src.transform.weather import transform_weather
 
 
 def main():
@@ -20,16 +22,18 @@ def main():
             logger.info("========== Processing month %s ==========", month)
 
             # ---------- EXTRACT ----------
-            raw_path = extract_trips(month, config, logger)
+            raw_trips_path = extract_trips(month, config, logger)
+            raw_weather_path = extract_weather(month, config, logger)
 
             # ---------- TRANSFORM ----------
-            transform_trips(raw_path, month, config, logger)
+            transform_trips(raw_trips_path, month, config, logger)
+            transform_weather(raw_weather_path, month, config, logger)
 
         logger.info("Pipeline finished successfully")
 
     except Exception:
-        logger.exception("Pipeline failed")  # logs the full error traceback
-        sys.exit(1)  # non-zero exit code tells schedulers the run failed
+        logger.exception("Pipeline failed")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
