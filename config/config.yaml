@@ -1,0 +1,38 @@
+# ---------- Project paths ----------
+paths:
+  raw: data/raw              # files exactly as downloaded
+  staging: data/staging      # cleaned / transformed files
+  warehouse: data/warehouse  # DuckDB database lives here
+  logs: logs
+
+# ---------- Data sources ----------
+sources:
+  trips_base_url: https://d37ci6vzurychx.cloudfront.net/trip-data
+  taxi_type: yellow
+  zone_lookup_url: https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv
+  weather_api_url: https://archive-api.open-meteo.com/v1/archive
+
+# ---------- Which months to process ----------
+pipeline:
+  months:
+    - "2024-01"
+    - "2024-02"
+
+# ---------- Weather location (New York City) ----------
+weather:
+  latitude: 40.7128
+  longitude: -74.0060
+  timezone: America/New_York
+
+# ---------- Data cleaning rules ----------
+cleaning:
+  min_trip_distance: 0.1     # miles
+  max_trip_distance: 100
+  min_fare: 0
+  max_fare: 500
+  max_trip_duration_minutes: 300
+  max_passenger_count: 6
+
+# ---------- Warehouse ----------
+warehouse:
+  db_file: nyc_taxi.duckdb
